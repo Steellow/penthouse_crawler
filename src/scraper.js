@@ -1,38 +1,78 @@
 const puppeteer = require("puppeteer");
 
-const URL =
+const URL_SEARCH_RESULTS =
     "https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1001&size%5Bmin%5D=35&size%5Bmax%5D=60&cardType=101";
 
 const USER_AGENT =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
 
-const RESULTS_LINK_SELECTOR = ".cards .cards__card card ng-include a";
+const APARTMENT_INFO_TITLE_FLOOR = "Kerros";
 
-const getPage = async (browser) => {
+//
+
+const openPage = async (browser, url) => {
     const page = await browser.newPage();
     await page.setUserAgent(USER_AGENT);
+    await page.goto(url, {
+        timeout: 10000,
+        waitUntil: "domcontentloaded",
+    });
 
     return page;
 };
 
-/**
- * @returns Array of links to each apartment from the 1st result page
- */
-async function getLinkList() {
+const getSearchResultLinks = async () => {
     const browser = await puppeteer.launch();
-    const page = await getPage(browser);
 
-    await page.goto(URL, { timeout: 10000, waitUntil: "domcontentloaded" });
+    const page = await openPage(browser, URL_SEARCH_RESULTS);
     await page.waitForSelector(".cards");
 
-    const results = await page.$$eval(RESULTS_LINK_SELECTOR, (el) =>
-        el.map((e) => e.href)
+    // console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
+    // Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
+    // Another option is to use `page.$$eval` but it's not as fast
+    const results = await page.evaluate(() =>
+        Array.from(
+            document.querySelectorAll(".cards .cards__card card ng-include a"),
+            (e) => e.href
+        )
+    );
+
+    browser.close();
+    return results;
+};
+
+const isTopFloorApartment = async (url) => {
+    const browser = await puppeteer.launch();
+
+    const page = await openPage(browser, url);
+    await page.waitForSelector(".info-table");
+
+    // console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
+    // Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
+    // Another option is to use `page.$$eval` but it's not as fast
+    const apartmentInfo = await page.evaluate(() =>
+        Array.from(
+            document.querySelectorAll(".info-table .info-table__row"),
+            (e) => {
+                const title = e.querySelector(".info-table__title").textContent;
+                const value = e.querySelector(".info-table__value").textContent;
+                return { title, value };
+            }
+        )
     );
 
     browser.close();
 
-    return results;
-}
+    // Find the floor info
+    const floorValue = apartmentInfo.find(
+        (info) => info.title === APARTMENT_INFO_TITLE_FLOOR
+    ).value;
+
+    // Check if it's the top floor
+    const [floor, max] = floorValue.split(" / ");
+    return floor === max;
+};
 
 // For testing
-getLinkList();
+getSearchResultLinks();
+isTopFloorApartment("https://asunnot.oikotie.fi/vuokra-asunnot/espoo/17009446");

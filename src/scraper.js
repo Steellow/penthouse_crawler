@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const { getBannedAreas } = require("./storage");
 
 const URL_SEARCH_RESULTS =
     "https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1001&size%5Bmin%5D=35&size%5Bmax%5D=60&cardType=101";
@@ -7,6 +8,7 @@ const USER_AGENT =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
 
 const APARTMENT_INFO_TITLE_FLOOR = "Kerros";
+const APARTMENT_INFO_TITLE_CITY_AREA = "Kaupunginosa";
 
 //
 
@@ -41,7 +43,12 @@ const getSearchResultLinks = async () => {
     return results;
 };
 
-const isTopFloorApartment = async (url) => {
+/**
+ * Returns true if:
+ * Apartment is on the top floor
+ * Apartment is NOT in banned section
+ */
+const filterApartment = async (url) => {
     const browser = await puppeteer.launch();
 
     const page = await openPage(browser, url);
@@ -63,16 +70,30 @@ const isTopFloorApartment = async (url) => {
 
     browser.close();
 
-    // Find the floor info
+    return (
+        isTopFloorApartment(apartmentInfo) &&
+        !(await isBannedArea(apartmentInfo))
+    );
+};
+
+const isTopFloorApartment = (apartmentInfo) => {
     const floorValue = apartmentInfo.find(
         (info) => info.title === APARTMENT_INFO_TITLE_FLOOR
     ).value;
 
-    // Check if it's the top floor
     const [floor, max] = floorValue.split(" / ");
     return floor === max;
 };
 
+const isBannedArea = async (apartmentInfo) => {
+    const bannedAreas = await getBannedAreas();
+    const cityArea = apartmentInfo.find(
+        (info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
+    ).value;
+
+    return bannedAreas.includes(cityArea);
+};
+
 // For testing
-getSearchResultLinks();
-isTopFloorApartment("https://asunnot.oikotie.fi/vuokra-asunnot/espoo/17009446");
+// getSearchResultLinks();
+filterApartment("https://asunnot.oikotie.fi/vuokra-asunnot/espoo/17009446");

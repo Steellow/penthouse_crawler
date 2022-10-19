@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const puppeteer = require("puppeteer");
 const { getBannedAreas } = require("./storage");
 
@@ -13,34 +14,36 @@ const APARTMENT_INFO_TITLE_CITY_AREA = "Kaupunginosa";
 //
 
 const openPage = async (browser, url) => {
-    const page = await browser.newPage();
-    await page.setUserAgent(USER_AGENT);
-    await page.goto(url, {
-        timeout: 10000,
-        waitUntil: "domcontentloaded",
-    });
+	const page = await browser.newPage();
+	await page.setUserAgent(USER_AGENT);
+	await page.goto(url, {
+		timeout: 10000,
+		waitUntil: "domcontentloaded",
+	});
 
-    return page;
+	return page;
 };
 
 const getSearchResultLinks = async () => {
-    const browser = await puppeteer.launch();
+	console.log("Fetching search result links");
 
-    const page = await openPage(browser, URL_SEARCH_RESULTS);
-    await page.waitForSelector(".cards");
+	const browser = await puppeteer.launch();
 
-    // console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
-    // Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
-    // Another option is to use `page.$$eval` but it's not as fast
-    const results = await page.evaluate(() =>
-        Array.from(
-            document.querySelectorAll(".cards .cards__card card ng-include a"),
-            (e) => e.href
-        )
-    );
+	const page = await openPage(browser, URL_SEARCH_RESULTS);
+	await page.waitForSelector(".cards");
 
-    browser.close();
-    return results;
+	// console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
+	// Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
+	// Another option is to use `page.$$eval` but it's not as fast
+	const results = await page.evaluate(() =>
+		Array.from(
+			document.querySelectorAll(".cards .cards__card card ng-include a"),
+			(e) => e.href
+		)
+	);
+
+	browser.close();
+	return results;
 };
 
 /**
@@ -49,51 +52,51 @@ const getSearchResultLinks = async () => {
  * Apartment is NOT in banned section
  */
 const filterApartment = async (url) => {
-    const browser = await puppeteer.launch();
+	console.log("Filtering apartment " + url);
 
-    const page = await openPage(browser, url);
-    await page.waitForSelector(".info-table");
+	const browser = await puppeteer.launch();
 
-    // console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
-    // Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
-    // Another option is to use `page.$$eval` but it's not as fast
-    const apartmentInfo = await page.evaluate(() =>
-        Array.from(
-            document.querySelectorAll(".info-table .info-table__row"),
-            (e) => {
-                const title = e.querySelector(".info-table__title").textContent;
-                const value = e.querySelector(".info-table__value").textContent;
-                return { title, value };
-            }
-        )
-    );
+	const page = await openPage(browser, url);
+	await page.waitForSelector(".info-table");
 
-    browser.close();
+	// console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
+	// Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
+	// Another option is to use `page.$$eval` but it's not as fast
+	const apartmentInfo = await page.evaluate(() =>
+		Array.from(
+			document.querySelectorAll(".info-table .info-table__row"),
+			(e) => {
+				const title = e.querySelector(".info-table__title").textContent;
+				const value = e.querySelector(".info-table__value").textContent;
+				return { title, value };
+			}
+		)
+	);
 
-    return (
-        isTopFloorApartment(apartmentInfo) &&
+	browser.close();
+
+	return (
+		isTopFloorApartment(apartmentInfo) &&
         !(await isBannedArea(apartmentInfo))
-    );
+	);
 };
 
 const isTopFloorApartment = (apartmentInfo) => {
-    const floorValue = apartmentInfo.find(
-        (info) => info.title === APARTMENT_INFO_TITLE_FLOOR
-    ).value;
+	const floorValue = apartmentInfo.find(
+		(info) => info.title === APARTMENT_INFO_TITLE_FLOOR
+	).value;
 
-    const [floor, max] = floorValue.split(" / ");
-    return floor === max;
+	const [floor, max] = floorValue.split(" / ");
+	return floor === max;
 };
 
 const isBannedArea = async (apartmentInfo) => {
-    const bannedAreas = await getBannedAreas();
-    const cityArea = apartmentInfo.find(
-        (info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
-    ).value;
+	const bannedAreas = await getBannedAreas();
+	const cityArea = apartmentInfo.find(
+		(info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
+	).value;
 
-    return bannedAreas.includes(cityArea);
+	return bannedAreas.includes(cityArea);
 };
 
-// For testing
-// getSearchResultLinks();
-filterApartment("https://asunnot.oikotie.fi/vuokra-asunnot/espoo/17009446");
+module.exports = { getSearchResultLinks, filterApartment };

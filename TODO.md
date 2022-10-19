@@ -1,0 +1,3 @@
+- Proper error catching
+- Check apartments periodically
+- Add command to ban city areas

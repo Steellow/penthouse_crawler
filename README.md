@@ -8,7 +8,7 @@ Note that some apartments do not contain floor information on Oikotie. In this c
 
 ## How to run it
 
-Just do `npm i` and `npm start` to run this bot. Remember to specify environemnt variables (see section below). The first time someone does `/start` command, their chat id saved and later only that user is able to use bot.
+Just do `npm i` and `npm start` to run this bot. Remember to specify environemnt variables (see section below). The first time someone does `/start` command, their chat id is saved and later only that user is able to use the bot.
 
 I'm hosting this bot on fly.io. You can host it pretty much anywhere you want, as long as it has persistent storage (for saving chat id, checked links and banned areas).
 

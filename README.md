@@ -1,6 +1,6 @@
 # Penthouse crawler
 
-What it does...
+Telegram bot which checks for new top floor apartments from Oikotie, and notifies the user. New apartments are checked once per hour.
 
 Note that some apartments do not contain floor information on Oikotie. In this case, user is notified about the apartment.
 

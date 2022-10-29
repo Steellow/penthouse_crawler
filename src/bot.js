@@ -3,27 +3,12 @@ const storage = require("./storage");
 const util = require("./util");
 
 const { reportError, reportShutdown } = require("./reporter");
-const { getSearchResultLinks, filterApartment } = require("./scraper");
+const {
+	checkNewApartments,
+	checkNewApartmentsEveryHourCronJob,
+} = require("./scheduler");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
-
-const checkNewApartments = async (ctx) => {
-	console.log("Checking for new apartments 🏡");
-
-	const links = await getSearchResultLinks();
-	const newLinks = await storage.filterNewLinks(links);
-
-	for (let i = 0; i < newLinks.length; i++) {
-		const link = newLinks[i];
-		const sendMsg = await filterApartment(link);
-		if (sendMsg) {
-			console.log("Top floor apartment found, sending message! 🔔");
-			ctx.reply(link);
-		}
-	}
-
-	console.log("All new apartments checked 🤙");
-};
 
 const isValidUser = async (ctx) => {
 	const currentChatId = util.getChatId(ctx);
@@ -81,6 +66,8 @@ bot.catch(async (err, ctx) => {
 
 bot.launch();
 console.log("Bot is now running! 🤖");
+
+checkNewApartmentsEveryHourCronJob.start();
 
 //
 

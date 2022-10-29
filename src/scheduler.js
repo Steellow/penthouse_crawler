@@ -20,9 +20,9 @@ const checkNewApartments = async (ctx) => {
 	console.log("All new apartments checked 🤙");
 };
 
-const checkNewApartmentsEveryHourCronJob = new CronJob(
-	"16 * * * *",
-	checkNewApartments
-);
+const checkNewApartmentsCronJob = new CronJob("30 * * * *", checkNewApartments);
 
-module.exports = { checkNewApartments, checkNewApartmentsEveryHourCronJob };
+module.exports = {
+	checkNewApartments,
+	checkNewApartmentsCronJob,
+};

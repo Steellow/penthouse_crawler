@@ -5,7 +5,7 @@ const util = require("./util");
 const { reportError, reportShutdown } = require("./reporter");
 const {
 	checkNewApartments,
-	checkNewApartmentsEveryHourCronJob,
+	checkNewApartmentsCronJob,
 } = require("./scheduler");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -67,7 +67,7 @@ bot.catch(async (err, ctx) => {
 bot.launch();
 console.log("Bot is now running! 🤖");
 
-checkNewApartmentsEveryHourCronJob.start();
+checkNewApartmentsCronJob.start();
 
 //
 

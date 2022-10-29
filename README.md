@@ -12,7 +12,7 @@ Just do `npm i` and `npm start` to run this bot. Remember to specify environemnt
 
 I'm hosting this bot on fly.io. You can host it pretty much anywhere you want, as long as it has persistent storage (for saving chat id, checked links and banned areas).
 
-You probably want to change the `URL_SEARCH_RESULTS` variable at `scraper.js`. If you want to change the cron job frequency, check `scheduler.js`.
+You probably want to change the `URL_SEARCH_RESULTS` variable at `scraper.js`. If you want to change the cron job frequency, check `CronJob` in `bot.js`.
 
 ## Commands
 

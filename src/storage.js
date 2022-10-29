@@ -1,7 +1,29 @@
 const storage = require("node-persist");
+const util = require("./util");
 
-const STORAGE_KEY_BANNED_AREAS = "banned_areas";
-const STORAGE_KEY_CHECKED_LINKS = "checked_links";
+const STORAGE_KEY_BANNED_AREAS = "BANNED_AREAS";
+const STORAGE_KEY_CHECKED_LINKS = "CHECKED_LINKS";
+const STORAGE_KEY_CHAT_ID = "CHAT_ID";
+
+/**
+ * Saves chat id to storage, if it's not saved already
+ */
+const saveChatId = async (ctx) => {
+	await storage.init();
+
+	const savedChatId = await storage.getItem(STORAGE_KEY_CHAT_ID);
+	if (!savedChatId) {
+		const chatId = util.getChatId(ctx);
+
+		console.log("Chat id not in storage, saving value " + chatId);
+		storage.setItem(STORAGE_KEY_CHAT_ID, chatId);
+	}
+};
+
+const getChatId = async () => {
+	await storage.init();
+	return await storage.getItem(STORAGE_KEY_CHAT_ID);
+};
 
 const banArea = async (area) => {
 	if (!area) {
@@ -51,4 +73,10 @@ const filterNewLinks = async (scrapedLinks) => {
 	return newLinks;
 };
 
-module.exports = { getBannedAreas, filterNewLinks, banArea };
+module.exports = {
+	getBannedAreas,
+	filterNewLinks,
+	banArea,
+	saveChatId,
+	getChatId,
+};

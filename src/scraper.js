@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const { getBannedAreas } = require("./storage");
 
 const URL_SEARCH_RESULTS =
-	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D%5D&price%5Bmax%5D=1000&size%5Bmax%5D=50&cardType=101";
+	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101";
 
 const USER_AGENT =
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
@@ -103,7 +103,12 @@ const isBannedArea = async (apartmentInfo) => {
 		(info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
 	)?.value;
 
-	return bannedAreas.includes(cityArea.toLowerCase());
+	const banned = bannedAreas.includes(cityArea.toLowerCase());
+	if (banned) {
+		console.log("Top floor apartment found but is in banned area 🤖");
+	}
+
+	return banned;
 };
 
 module.exports = { getSearchResultLinks, filterApartment };

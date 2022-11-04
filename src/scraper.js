@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 const puppeteer = require("puppeteer");
-const { getBannedAreas } = require("./storage");
+const storage = require("./storage");
 
 const URL_SEARCH_RESULTS =
 	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101";
@@ -75,10 +75,12 @@ const filterApartment = async (url) => {
 
 	browser.close();
 
-	return (
+	const validApartment =
 		isTopFloorApartment(apartmentInfo) &&
-		!(await isBannedArea(apartmentInfo))
-	);
+		!(await isBannedArea(apartmentInfo));
+	await storage.saveLink(url);
+
+	return validApartment;
 };
 
 const isTopFloorApartment = (apartmentInfo) => {
@@ -98,7 +100,7 @@ const isTopFloorApartment = (apartmentInfo) => {
 };
 
 const isBannedArea = async (apartmentInfo) => {
-	const bannedAreas = await getBannedAreas();
+	const bannedAreas = await storage.getBannedAreas();
 	const cityArea = apartmentInfo.find(
 		(info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
 	)?.value;

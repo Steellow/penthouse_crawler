@@ -53,30 +53,27 @@ const getBannedAreas = async () => {
 	return (await storage.getItem(STORAGE_KEY_BANNED_AREAS)) || [];
 };
 
+const getCheckedLinks = async () => {
+	await storage.init();
+	return (await storage.getItem(STORAGE_KEY_CHECKED_LINKS)) || [];
+};
+
 /**
- * Returns only those links which are not checked yet
- * Also adds them to storage, so they won't be checked again
+ * Adds specified link to CHECKED_LINKS
  */
-const filterNewLinks = async (scrapedLinks) => {
+const saveLink = async (link) => {
 	await storage.init();
 
-	const checkedLinks =
-		(await storage.getItem(STORAGE_KEY_CHECKED_LINKS)) || [];
-
-	const newLinks = scrapedLinks.filter(
-		(link) => !checkedLinks.includes(link)
-	);
-
-	storage.setItem(STORAGE_KEY_CHECKED_LINKS, [...checkedLinks, ...newLinks]);
-
-	console.log(newLinks.length + " new apartments found! 🥳");
-	return newLinks;
+	const checkedLinks = await getCheckedLinks();
+	storage.setItem(STORAGE_KEY_CHECKED_LINKS, [...checkedLinks, link]);
+	console.log(`${link} saved to storage`);
 };
 
 module.exports = {
 	getBannedAreas,
-	filterNewLinks,
 	banArea,
 	saveChatId,
 	getChatId,
+	getCheckedLinks,
+	saveLink,
 };

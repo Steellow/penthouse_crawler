@@ -8,21 +8,29 @@ const { filterApartment, getSearchResultLinks } = require("./scraper");
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 const checkNewApartments = async (bot) => {
-	console.log("Checking for new apartments 🏡");
+	try {
+		console.log("Checking for new apartments 🏡");
 
-	const links = await getSearchResultLinks();
-	const newLinks = await storage.filterNewLinks(links);
+		const links = await getSearchResultLinks();
+		const checkedLinks = await storage.getCheckedLinks();
 
-	for (let i = 0; i < newLinks.length; i++) {
-		const link = newLinks[i];
-		const sendMsg = await filterApartment(link);
-		if (sendMsg) {
-			console.log("Top floor apartment found, sending message! 🔔");
-			bot.telegram.sendMessage(await storage.getChatId(), link);
+		const newLinks = await util.filterNewLinks(links, checkedLinks);
+
+		for (let i = 0; i < newLinks.length; i++) {
+			const link = newLinks[i];
+			const sendMsg = await filterApartment(link);
+			if (sendMsg) {
+				console.log("Top floor apartment found, sending message! 🔔");
+				bot.telegram.sendMessage(await storage.getChatId(), link);
+			}
 		}
-	}
 
-	console.log("All new apartments checked 🤙");
+		console.log("All new apartments checked 🤙");
+	} catch (error) {
+		console.log("Error happened inside checkNewApartments, stopping");
+		console.error(error);
+		reportError(bot, error, false);
+	}
 };
 
 const isValidUser = async (ctx) => {

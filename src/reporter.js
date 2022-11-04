@@ -3,11 +3,13 @@ const { getChatId } = require("./storage");
 /**
  * Reports any errors directly to the chat
  */
-const reportError = async (ctx, err, uncaught = false) =>
+const reportError = async (ctx, err, uncaught = false) => {
+	console.error(err);
 	await ctx.telegram.sendMessage(
 		await getChatId(),
 		`${uncaught ? "UNCAUGHT ERROR: " : ""}${err}`
 	);
+};
 
 /**
  * Reports any shutdowns directly to the chat

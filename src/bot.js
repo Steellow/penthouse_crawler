@@ -28,7 +28,6 @@ const checkNewApartments = async (bot) => {
 		console.log("All new apartments checked 🤙");
 	} catch (error) {
 		console.log("Error happened inside checkNewApartments, stopping");
-		console.error(error);
 		reportError(bot, error, false);
 	}
 };

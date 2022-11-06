@@ -38,10 +38,7 @@ const launchPuppeteer = async () => {
 const getSearchResultLinks = async () => {
 	console.log("Fetching search result links 🔗");
 
-	const browser = await puppeteer.launch({
-		args: ["--no-sandbox", "--disable-setuid-sandbox"],
-	});
-
+	const browser = await launchPuppeteer();
 	const page = await openPage(browser, URL_SEARCH_RESULTS);
 	await page.waitForSelector(".cards");
 
@@ -67,10 +64,7 @@ const getSearchResultLinks = async () => {
 const filterApartment = async (url) => {
 	console.log("Checking " + url);
 
-	const browser = await puppeteer.launch({
-		args: ["--no-sandbox", "--disable-setuid-sandbox"],
-	});
-
+	const browser = await launchPuppeteer();
 	const page = await openPage(browser, url);
 	await page.waitForSelector(".info-table");
 

@@ -24,10 +24,23 @@ const openPage = async (browser, url) => {
 	return page;
 };
 
+const launchPuppeteer = async () => {
+	const env = process.env.NODE_ENV || "development";
+	const args =
+		env === "production"
+			? ["--no-sandbox", "--disable-setuid-sandbox"]
+			: [];
+	return await puppeteer.launch({
+		args,
+	});
+};
+
 const getSearchResultLinks = async () => {
 	console.log("Fetching search result links 🔗");
 
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({
+		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+	});
 
 	const page = await openPage(browser, URL_SEARCH_RESULTS);
 	await page.waitForSelector(".cards");
@@ -54,7 +67,9 @@ const getSearchResultLinks = async () => {
 const filterApartment = async (url) => {
 	console.log("Checking " + url);
 
-	const browser = await puppeteer.launch();
+	const browser = await puppeteer.launch({
+		args: ["--no-sandbox", "--disable-setuid-sandbox"],
+	});
 
 	const page = await openPage(browser, url);
 	await page.waitForSelector(".info-table");

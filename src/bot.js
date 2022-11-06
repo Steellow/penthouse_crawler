@@ -4,6 +4,7 @@ const util = require("./util");
 const { reportError, reportShutdown } = require("./reporter");
 const { CronJob } = require("cron");
 const { filterApartment, getSearchResultLinks } = require("./scraper");
+const { server } = require("./server");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -92,7 +93,9 @@ console.log("Bot is now running! 🤖");
 // Runs the function every hour
 new CronJob("36 * * * *", () => checkNewApartments(bot)).start();
 
-//
+// Required for fly.io
+// Otherwise the bot keeps crashing
+server.listen(process.env.PORT || 3000);
 
 // Enable graceful stop
 process.once("SIGINT", () => {

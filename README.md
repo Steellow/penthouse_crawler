@@ -34,11 +34,12 @@ I tried to host this bot on Fly.io, but getting [Puppeteer](https://www.npmjs.co
 ## Storage
 
 - Uses [node-persist](https://www.npmjs.com/package/node-persist) to store stuff.
-- BANNED_AREAS: Array of banned areas.
+- `BANNED_AREAS`: Array of banned areas.
   - If a new top floor apartment is located in a banned area, user is not notified about it.
   - All banned areas are saved in lower case, for simplicity.
-- CHECKED_LINKS: Array of apartment links which are already checked.
-- CHAT_ID: Id of the chat with you & and the bot.
+- `CHECKED_LINKS`: Array of apartment links which are already checked.
+- `CHAT_ID`: Id of the chat with you & and the bot.
   - Used to send messages to the correct chat.
+    - This is needed since we are sending messages automatically with cron job without any user interaction.
   - This is saved when you start the bot first time using `/start`.
-  - Also prevents bot usage if the chat is doesn't match.
+  - Also prevents bot usage if the chat id doesn't match.

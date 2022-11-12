@@ -24,16 +24,7 @@ const openPage = async (browser, url) => {
 	return page;
 };
 
-const launchPuppeteer = async () => {
-	const env = process.env.NODE_ENV || "development";
-	const args =
-		env === "production"
-			? ["--no-sandbox", "--disable-setuid-sandbox"]
-			: [];
-	return await puppeteer.launch({
-		args,
-	});
-};
+const launchPuppeteer = async () => await puppeteer.launch();
 
 const getSearchResultLinks = async () => {
 	console.log("Fetching search result links 🔗");

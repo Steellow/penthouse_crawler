@@ -10,9 +10,16 @@ Note that some apartments do not contain floor information on Oikotie. In this c
 
 Just do `npm i` and `npm start` to run this bot. Remember to specify environemnt variables (see section below). **The first time someone does `/start` command, their chat id is saved and later only that user is able to use the bot.**
 
-I'm hosting this bot on fly.io. You can host it pretty much anywhere you want, as long as it has persistent storage (for saving chat id, checked links and banned areas).
+You might want to change the `URL_SEARCH_RESULTS` variable at `scraper.js`. If you want to change the cron job frequency, check `CronJob` in `bot.js`.
 
-You probably want to change the `URL_SEARCH_RESULTS` variable at `scraper.js`. If you want to change the cron job frequency, check `CronJob` in `bot.js`.
+### Running on pm2
+
+I tried to host this bot on Fly.io, but getting [Puppeteer](https://www.npmjs.com/package/puppeteer) to work on cloud just wasn't worth the hassle. So instead, I'm running it using [pm2](https://pm2.keymetrics.io/) on my laptop. This means the bot is running only when the laptop is running, but that's good enough for me since I don't need it to fetch new results at night :)
+
+1. Install [pm2](https://pm2.keymetrics.io/): `npm install pm2 -g`
+2. Add this app to pm2: `BOT_TOKEN=xxx pm2 start src/bot.js --name penthouse_crawler`
+3. Generate a startup script: `pm2 startup`
+4. Save the app to be restored at reboot: `pm2 save`
 
 ## Commands
 

@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const storage = require("./storage");
 
 const URL_SEARCH_RESULTS =
-	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101";
+	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101&size%5Bmin%5D=20";
 
 const USER_AGENT =
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";

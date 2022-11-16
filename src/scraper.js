@@ -105,7 +105,11 @@ const isBannedArea = async (apartmentInfo) => {
 		(info) => info.title === APARTMENT_INFO_TITLE_CITY_AREA
 	)?.value;
 
-	const banned = bannedAreas.includes(cityArea.toLowerCase());
+	// In rare cases cityArea cannot be found;
+	// in this case just return false as we don't want to miss it
+	const banned =
+		cityArea != null && bannedAreas.includes(cityArea.toLowerCase());
+
 	if (banned) {
 		console.log("Top floor apartment found but is in banned area 🤖");
 	}

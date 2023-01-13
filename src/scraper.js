@@ -3,7 +3,7 @@ const puppeteer = require("puppeteer");
 const storage = require("./storage");
 
 const URL_SEARCH_RESULTS =
-	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101&size%5Bmin%5D=20";
+	"https://asunnot.oikotie.fi/vuokra-asunnot?pagination=1&locations=%5B%5B64,6,%22Helsinki%22%5D,%5B39,6,%22Espoo%22%5D%5D&price%5Bmax%5D=1000&cardType=101&size%5Bmin%5D=23";
 
 const USER_AGENT =
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
@@ -31,14 +31,14 @@ const getSearchResultLinks = async () => {
 
 	const browser = await launchPuppeteer();
 	const page = await openPage(browser, URL_SEARCH_RESULTS);
-	await page.waitForSelector(".cards");
+	await page.waitForSelector(".cards-v2");
 
 	// console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
 	// Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated
 	// Another option is to use `page.$$eval` but it's not as fast
 	const results = await page.evaluate(() =>
 		Array.from(
-			document.querySelectorAll(".cards .cards__card card ng-include a"),
+			document.querySelectorAll(".cards-v2 .cards-v2__card card-v2 a"),
 			(e) => e.href
 		)
 	);

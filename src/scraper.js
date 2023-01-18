@@ -31,7 +31,7 @@ const getSearchResultLinks = async () => {
 
 	const browser = await launchPuppeteer();
 	const page = await openPage(browser, URL_SEARCH_RESULTS);
-	await page.waitForSelector(".cards-v2");
+	await page.waitForSelector(".cards-v2 .cards-v2__card card-v2 a");
 
 	// console.log doesn't work inside page.evaluate(), since it runs the code inside the browser!!
 	// Variables also need to be passed as arguments, which I'm not doing since it just makes it more complicated

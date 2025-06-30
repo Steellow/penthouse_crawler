@@ -2,6 +2,8 @@
 
 Telegram bot which checks for new top floor apartments from Oikotie, and notifies the user.
 
+> ❗ Oikotie now has a "Top floor" filter, making this project mostly useless.
+
 New apartments are checked once per hour. You can also ban specific areas, so that the apartments in that area gets ignored.
 
 Note that some apartments do not contain floor information on Oikotie. In this case, user is notified about the apartment just in case.
